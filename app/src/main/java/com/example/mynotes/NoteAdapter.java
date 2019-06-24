@@ -12,7 +12,18 @@ import java.util.List;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow> {
 
+
     private List<NotesModel> notesList;
+
+    public void addNote(NotesModel note) {
+        this.notesList.add(note);
+    }
+
+    public void deleteNote() {
+
+        this.notesList.remove(0);
+
+    }
 
     public NoteAdapter(List<NotesModel> notesList){
         this.notesList = notesList;
