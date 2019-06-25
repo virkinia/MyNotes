@@ -1,33 +1,47 @@
 package com.example.mynotes;
 
+
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow> {
+import java.util.ArrayList;
 
 
-    private List<NotesModel> notesList;
 
-    public void addNote(NotesModel note) {
-        this.notesList.add(note);
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow>  {
+
+    ApplicationPreferences mAppPreference;
+
+
+
+    private ArrayList<NotesModel> notesList;
+
+
+    public NoteAdapter(ArrayList<NotesModel> notesList){
+        this.notesList = notesList;
+    }
+
+    public void addNote(NotesModel note, int index) {
+        this.notesList.add(index, note);
+        notifyItemInserted(0);
+
+        ApplicationPreferences.saveNotes(this.notesList);
     }
 
     public void deleteNote() {
 
         this.notesList.remove(0);
+        notifyItemRemoved(0);
+        ApplicationPreferences.saveNotes(this.notesList);
 
     }
 
-    public NoteAdapter(List<NotesModel> notesList){
-        this.notesList = notesList;
-    }
+
 
     @Override
     public MyNoteRow onCreateViewHolder(@NonNull ViewGroup parent, int i) {
@@ -49,8 +63,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow> {
     }
 
 
+
+
     static class MyNoteRow extends RecyclerView.ViewHolder {
         private TextView title, subtitle;
+
 
         MyNoteRow(View v) {
             super(v);

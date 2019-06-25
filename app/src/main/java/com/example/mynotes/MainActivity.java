@@ -6,9 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +21,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     RecyclerView recyclerViewNotes;
 
     Button buttonAdd, buttonDelete, buttonMove;
+    EditText etTitle, etSubtitle;
+
+
 
     NoteAdapter mAdapter;
+
+    ApplicationPreferences mAppPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +44,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // use a linear layout manager
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this));
 
+
+
+        mAppPreference.init(getApplicationContext());
+
         // specify an adapter with the list to show
-        mAdapter = new NoteAdapter(getData());
+
+        ArrayList<NotesModel> noteLists = mAppPreference.readNotes();
+        if (noteLists == null) {
+            mAdapter = new NoteAdapter(getData());
+        }
+        else {
+            mAdapter = new NoteAdapter(noteLists);
+        }
+
         recyclerViewNotes.setAdapter(mAdapter);
+
+
+
+
 
 
     }
@@ -50,13 +74,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonDelete = findViewById(R.id.buttonDelete);
         buttonMove = findViewById(R.id.buttonMove);
 
+        etTitle = findViewById(R.id.etTitle);
+        etSubtitle = findViewById(R.id.etSubtitle);
+
     }
 
 
 
-    private List<NotesModel> getData(){
+    private ArrayList<NotesModel> getData(){
 
-        List<NotesModel> listaNotes = new ArrayList<>();
+        ArrayList<NotesModel> listaNotes = new ArrayList<>();
 
         for(int i=1; i<=6; i++){
 
@@ -80,11 +107,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                  Log.e("Botón Add", "button ADD");
 
                  NotesModel note = new NotesModel();
-                 note.setTitle("Nota Títtulo Nueva");
-                 note.setSubTitle("subtítulo Nueva ");
+                 note.setTitle(etTitle.getText().toString());
+                 note.setSubTitle(etSubtitle.getText().toString());
 
-                 mAdapter.addNote(note);
-                 mAdapter.notifyDataSetChanged();
+                 mAdapter.addNote(note, 0);
+                 ///mAdapter.notifyDataSetChanged();
+
 
                  break;
              case R.id.buttonMove :
@@ -93,8 +121,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                  break;
              case R.id.buttonDelete :
                  mAdapter.deleteNote();
-                 mAdapter.notifyDataSetChanged();
+                 // mAdapter.notifyDataSetChanged();
+
                  break;
          }
     }
+
+
+
 }
