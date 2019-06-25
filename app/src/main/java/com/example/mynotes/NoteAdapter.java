@@ -15,9 +15,6 @@ import java.util.ArrayList;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow>  {
 
-    ApplicationPreferences mAppPreference;
-
-
 
     private ArrayList<NotesModel> notesList;
 

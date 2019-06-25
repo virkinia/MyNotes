@@ -1,20 +1,20 @@
 package com.example.mynotes;
 
-import android.content.Intent;
-import android.net.Uri;
+
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -34,7 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         this.initUI();
+
+        mAppPreference.init(getApplicationContext());
+
+
 
 
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
@@ -46,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-        mAppPreference.init(getApplicationContext());
 
         // specify an adapter with the list to show
 
@@ -62,7 +66,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-
+        if(mAppPreference.readOnBoarding() == false) {
+            this.onBoarding();
+        }
 
 
     }
@@ -97,6 +103,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return listaNotes;
     }
 
+    private void onBoarding() {
+
+
+
+
+        new AlertDialog.Builder(this)
+                .setTitle("Bienvenido")
+                .setMessage("Pulsa Add para añaidr una nueva nota y Delete para borrar")
+
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton("No mostrar más", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Continue with delete operation
+                        mAppPreference.saveOnBoarding(true);
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Continue with delete operation
+                        mAppPreference.saveOnBoarding(false);
+                    }
+                })
+                .show();
+
+    }
     @Override
     public void onClick(View v) {
          Button button = (Button) v;

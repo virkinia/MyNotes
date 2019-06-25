@@ -11,7 +11,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class ApplicationPreferences {
-    static final String KEYNAME = "MYNOTES";
+    static final String KEYNOTES = "MYNOTES";
+    static final String KEYONBOARDING = "ONBOARDING";
 
 
     private  static SharedPreferences mSharedPref;
@@ -20,19 +21,18 @@ public class ApplicationPreferences {
 
     public static void init(Context context) {
         if(mSharedPref == null) {
-            mSharedPref = context.getSharedPreferences(KEYNAME, Activity.MODE_PRIVATE);
+            mSharedPref = context.getSharedPreferences(KEYNOTES, Activity.MODE_PRIVATE);
         }
     }
 
-    public static void saveString(String value) {
+    public static void saveOnBoarding(boolean value) {
         SharedPreferences.Editor prefsEditor = mSharedPref.edit();
-
-        prefsEditor.putString(KEYNAME, value);
+        prefsEditor.putBoolean(KEYONBOARDING, value);
         prefsEditor.apply();
     }
 
-    public static String readString(String defValue) {
-        return mSharedPref.getString(KEYNAME, defValue);
+    public static Boolean readOnBoarding() {
+        return mSharedPref.getBoolean(KEYONBOARDING, false);
     }
 
     public static void saveNotes(ArrayList<NotesModel> notesList) {
@@ -40,7 +40,7 @@ public class ApplicationPreferences {
         Gson gson = new Gson();
         String json = gson.toJson(notesList);
 
-        prefsEditor.putString(KEYNAME, json);
+        prefsEditor.putString(KEYNOTES, json);
         prefsEditor.apply();
         //prefsEditor.commit();
     }
@@ -48,7 +48,7 @@ public class ApplicationPreferences {
     public static ArrayList<NotesModel> readNotes() {
 
         Gson gson = new Gson();
-        String json = mSharedPref.getString(KEYNAME, null);
+        String json = mSharedPref.getString(KEYNOTES, null);
         Type type = new TypeToken<ArrayList<NotesModel>>(){}.getType();
         return gson.fromJson(json, type);
 
