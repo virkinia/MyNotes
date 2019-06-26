@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void onBoarding() {
-        
+
         new AlertDialog.Builder(this)
                 .setTitle("Bienvenido")
                 .setMessage("Pulsa Add para añaidr una nueva nota y Delete para borrar")
