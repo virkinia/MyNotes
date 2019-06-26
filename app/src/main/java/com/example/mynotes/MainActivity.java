@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,9 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText etTitle, etSubtitle;
 
 
-
     NoteAdapter mAdapter;
-
     ApplicationPreferences mAppPreference;
 
     @Override
@@ -34,36 +33,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        // Asociamos los elementos de la vista al código
         this.initUI();
 
-        mAppPreference.init(getApplicationContext());
 
-
-
-
-        recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
-
-        recyclerViewNotes.setHasFixedSize(true);
-
-        // use a linear layout manager
-        recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this));
-
-
-
-
-        // specify an adapter with the list to show
-
+        // Datos del shared
         ArrayList<NotesModel> noteLists = mAppPreference.readNotes();
-        if (noteLists == null) {
-            mAdapter = new NoteAdapter(getData());
-        }
-        else {
-            mAdapter = new NoteAdapter(noteLists);
-        }
 
+        mAdapter = (noteLists == null) ? new NoteAdapter(getData()) : new NoteAdapter(noteLists);
         recyclerViewNotes.setAdapter(mAdapter);
 
+        // Añade el touch a mi mAdapter
+        ItemTouchHelper helper = new ItemTouchHelper(new MyTouchHelperCallback(mAdapter));
+        helper.attachToRecyclerView(recyclerViewNotes);
 
 
         if(mAppPreference.readOnBoarding() == false) {
@@ -82,6 +64,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         etTitle = findViewById(R.id.etTitle);
         etSubtitle = findViewById(R.id.etSubtitle);
+
+        // Iniciamos el sharedPreferences - para poder acceder a nuestros datos en local
+        mAppPreference.init(getApplicationContext());
+        recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
+        // Para que no cambie de tamaño cada vez que se añadan objetos
+        recyclerViewNotes.setHasFixedSize(true);
+        // Configuración comportate como una lista - puede comportarse como una tabla, o como celdas
+        recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
@@ -104,10 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void onBoarding() {
-
-
-
-
+        
         new AlertDialog.Builder(this)
                 .setTitle("Bienvenido")
                 .setMessage("Pulsa Add para añaidr una nueva nota y Delete para borrar")

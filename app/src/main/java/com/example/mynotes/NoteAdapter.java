@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
+import java.util.Collections;
 
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow>  {
@@ -18,27 +18,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow>  {
 
     private ArrayList<NotesModel> notesList;
 
-
     public NoteAdapter(ArrayList<NotesModel> notesList){
         this.notesList = notesList;
     }
-
-    public void addNote(NotesModel note, int index) {
-        this.notesList.add(index, note);
-        notifyItemInserted(0);
-
-        ApplicationPreferences.saveNotes(this.notesList);
-    }
-
-    public void deleteNote() {
-
-        this.notesList.remove(0);
-        notifyItemRemoved(0);
-        ApplicationPreferences.saveNotes(this.notesList);
-
-    }
-
-
 
     @Override
     public MyNoteRow onCreateViewHolder(@NonNull ViewGroup parent, int i) {
@@ -58,6 +40,36 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyNoteRow>  {
     public int getItemCount() {
         return notesList.size();
     }
+
+
+    public void addNote(NotesModel note, int index) {
+        this.notesList.add(index, note);
+        notifyItemInserted(0);
+
+        ApplicationPreferences.saveNotes(this.notesList);
+    }
+
+    public void deleteNote() {
+
+        this.notesList.remove(0);
+        notifyItemRemoved(0);
+        ApplicationPreferences.saveNotes(this.notesList);
+
+    }
+
+    public void onItemDismiss(int position){
+        notesList.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void onItemMove(int position_dragged, int position_target){
+        Collections.swap(notesList,position_dragged,position_target);
+        notifyItemMoved(position_dragged,position_target);
+
+    }
+
+
+
 
 
 
